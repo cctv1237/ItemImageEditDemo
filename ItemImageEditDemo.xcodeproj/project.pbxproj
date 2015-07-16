@@ -17,6 +17,8 @@
 		AB8F430A1B54F4790076ECF5 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB8F43091B54F4790076ECF5 /* Images.xcassets */; };
 		AB8F430D1B54F4790076ECF5 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = AB8F430B1B54F4790076ECF5 /* LaunchScreen.xib */; };
 		AB8F43191B54F4790076ECF5 /* ItemImageEditDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = AB8F43181B54F4790076ECF5 /* ItemImageEditDemoTests.m */; };
+		AB9A54591B57EAF4008D8FF5 /* BackgroundShade.m in Sources */ = {isa = PBXBuildFile; fileRef = AB9A54581B57EAF4008D8FF5 /* BackgroundShade.m */; };
+		AB9A545C1B57EB1E008D8FF5 /* EditWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = AB9A545B1B57EB1E008D8FF5 /* EditWindow.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,10 @@
 		AB8F43121B54F4790076ECF5 /* ItemImageEditDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ItemImageEditDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB8F43171B54F4790076ECF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB8F43181B54F4790076ECF5 /* ItemImageEditDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ItemImageEditDemoTests.m; sourceTree = "<group>"; };
+		AB9A54571B57EAF4008D8FF5 /* BackgroundShade.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BackgroundShade.h; sourceTree = "<group>"; };
+		AB9A54581B57EAF4008D8FF5 /* BackgroundShade.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BackgroundShade.m; sourceTree = "<group>"; };
+		AB9A545A1B57EB1E008D8FF5 /* EditWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditWindow.h; sourceTree = "<group>"; };
+		AB9A545B1B57EB1E008D8FF5 /* EditWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditWindow.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +87,7 @@
 		AB2C6BF41B560BA1009B6493 /* ImageEditPanel */ = {
 			isa = PBXGroup;
 			children = (
+				AB9A54561B57EAF4008D8FF5 /* Widgets */,
 				AB2C6BF51B560BB2009B6493 /* ImageEditPanel.h */,
 				AB2C6BF61B560BB2009B6493 /* ImageEditPanel.m */,
 			);
@@ -148,6 +155,17 @@
 				AB8F43171B54F4790076ECF5 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		AB9A54561B57EAF4008D8FF5 /* Widgets */ = {
+			isa = PBXGroup;
+			children = (
+				AB9A545A1B57EB1E008D8FF5 /* EditWindow.h */,
+				AB9A545B1B57EB1E008D8FF5 /* EditWindow.m */,
+				AB9A54571B57EAF4008D8FF5 /* BackgroundShade.h */,
+				AB9A54581B57EAF4008D8FF5 /* BackgroundShade.m */,
+			);
+			path = Widgets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -251,9 +269,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB8F43051B54F4790076ECF5 /* ViewController.m in Sources */,
+				AB9A54591B57EAF4008D8FF5 /* BackgroundShade.m in Sources */,
 				AB8F43021B54F4790076ECF5 /* AppDelegate.m in Sources */,
 				AB8F42FF1B54F4790076ECF5 /* main.m in Sources */,
 				AB2C6BEE1B56068A009B6493 /* UIView+LayoutMethods.m in Sources */,
+				AB9A545C1B57EB1E008D8FF5 /* EditWindow.m in Sources */,
 				AB2C6BF71B560BB2009B6493 /* ImageEditPanel.m in Sources */,
 				AB2C6BFA1B564DE3009B6493 /* DemoItem.m in Sources */,
 			);

@@ -8,16 +8,17 @@
 
 #import "ImageEditPanel.h"
 #import "DemoItem.h"
+#import "BackgroundShade.h"
+#import "EditWindow.h"
 #import "UIView+LayoutMethods.h"
 
 @interface ImageEditPanel () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIScrollView *editArea;
-@property (nonatomic, strong) UIImageView *editWindow;
+@property (nonatomic, strong) EditWindow *editWindow;
 @property (nonatomic, strong) UIImageView *editImageView;
 @property (nonatomic, strong) DemoItem *targetItem;
-@property (nonatomic, strong) UIImageView *shownImageView;
-@property (nonatomic, strong) UIView *backgroundShade;
+@property (nonatomic, strong) BackgroundShade *backgroundShade;
 
 @end
 
@@ -27,11 +28,10 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        [self addSubview:self.shownImageView];
         [self addSubview:self.editArea];
         [self addSubview:self.editWindow];
         [self.editArea addSubview:self.editImageView];
-        [self.editWindow addSubview:self.backgroundShade];
+        [self addSubview:self.backgroundShade];
     }
     return self;
 
@@ -49,18 +49,20 @@
 
 - (void)showAtItem:(DemoItem *)item inView:(UIView *)view {
     
+    self.targetItem = item;
+    
     [view addSubview:self];
     
     [self fill];
-    self.shownImageView.frame = item.frame;
+    [self.backgroundShade fill];
+    [self.backgroundShade addLayersToBackgroundShadeWithTargetItem:self.targetItem];
     self.editArea.frame = item.frame;
     self.editWindow.center = item.center;
-    self.editImageView.frame = item.bounds;
-    
-    self.targetItem = item;
+    self.editImageView.frame = item.imageView.frame;
     
     self.editImageView = [self resetBoundsforEditImageView:self.editImageView withImage:self.targetItem.imageView.image];
-    self.shownImageView = [self resetFrameforShownImageView:self.shownImageView byEditImageView:self.editImageView];
+    
+    
 
 }
 
@@ -70,14 +72,6 @@
 }
 
 #pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    self.shownImageView = [self resetFrameforShownImageView:self.shownImageView byEditImageView:self.editImageView];
-}
-
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView {
-    self.shownImageView = [self resetFrameforShownImageView:self.shownImageView byEditImageView:self.editImageView];
-}
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return self.editImageView;
@@ -133,16 +127,6 @@
     return imageView;
 }
 
-- (UIImageView *)resetFrameforShownImageView:(UIImageView *)shownImage byEditImageView:(UIImageView *)editImage {
-    shownImage.frame = CGRectMake(
-                                  editImage.frame.origin.x + self.editArea.frame.origin.x,
-                                  editImage.frame.origin.y + self.editArea.frame.origin.y,
-                                  editImage.frame.size.width,
-                                  editImage.frame.size.height
-                                  );
-    return shownImage;
-}
-
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
     UIView *hitView = [super hitTest:point withEvent:event];
     if (hitView == self)
@@ -174,9 +158,8 @@
 
 - (UIImageView *)editWindow {
     if (_editWindow == nil) {
-        _editWindow = [[UIImageView alloc] init];
-        _editWindow.image = [UIImage imageNamed:@"icon_direction-sign_80"];
-        _editWindow.bounds = CGRectMake(0, 0, _editWindow.image.size.width, _editWindow.image.size.height);
+        _editWindow = [[EditWindow alloc] init];
+        
     }
     return _editWindow;
 }
@@ -189,17 +172,9 @@
     return _editImageView;
 }
 
-- (UIImageView *)shownImageView {
-    if (_shownImageView == nil) {
-        _shownImageView = [[UIImageView alloc] init];
-        _shownImageView.alpha = 0.5f;
-    }
-    return _shownImageView;
-}
-
 - (UIView *)backgroundShade {
     if (_backgroundShade == nil) {
-        _backgroundShade = [[UIView alloc] init];
+        _backgroundShade = [[BackgroundShade alloc] init];
         _backgroundShade.alpha = 0.5;
     }
     return _backgroundShade;

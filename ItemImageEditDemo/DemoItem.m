@@ -19,6 +19,9 @@
 
 - (instancetype)init {
     if (self = [super init]) {
+        self.layer.borderWidth = 2.f;
+        self.layer.borderColor = [[UIColor cyanColor] CGColor];
+        self.clipsToBounds = YES;
         self.frame = CGRectMake(80, 320, 160, 160);
         [self addSubview:self.imageView];
         self.imageView.frame = CGRectMake(0, 0, 160, 160);
@@ -29,14 +32,14 @@
 }
 
 - (void)replaceImageViewWithImageView:(UIImageView *)imageView {
+    [self.imageView removeFromSuperview];
     self.imageView = imageView;
+    [self addSubview:self.imageView];
 }
 
 - (UIImageView *)imageView {
     if (_imageView == nil) {
         _imageView = [[UIImageView alloc] init];
-        _imageView.layer.borderWidth = 2.f;
-        _imageView.layer.borderColor = [[UIColor cyanColor] CGColor];
         _imageView.userInteractionEnabled = YES;
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
         _imageView.clipsToBounds = YES;
