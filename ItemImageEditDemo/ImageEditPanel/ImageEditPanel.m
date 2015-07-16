@@ -10,14 +10,15 @@
 #import "DemoItem.h"
 #import "UIView+LayoutMethods.h"
 
-@interface ImageEditPanel () <UIScrollViewDelegate>
+#define EDIT_PADDING 30
 
-@property (nonatomic, strong) UIScrollView *editArea;
+@interface ImageEditPanel () <UIGestureRecognizerDelegate>
+
 @property (nonatomic, strong) UIImageView *editWindow;
 @property (nonatomic, strong) UIImageView *editImageView;
 @property (nonatomic, strong) DemoItem *targetItem;
-@property (nonatomic, strong) UIImageView *shownImageView;
 @property (nonatomic, strong) UIView *backgroundShade;
+@property (nonatomic, strong) UIView *touchResponseView;
 
 @end
 
@@ -27,11 +28,12 @@
 
 - (instancetype)init {
     if (self = [super init]) {
-        [self addSubview:self.shownImageView];
-        [self addSubview:self.editArea];
+        self.clipsToBounds = NO;
+        
+        [self addSubview:self.editImageView];
         [self addSubview:self.editWindow];
-        [self.editArea addSubview:self.editImageView];
-        [self.editWindow addSubview:self.backgroundShade];
+        [self addSubview:self.backgroundShade];
+        [self addSubview:self.touchResponseView];
     }
     return self;
 
@@ -49,98 +51,123 @@
 
 - (void)showAtItem:(DemoItem *)item inView:(UIView *)view {
     
-    [view addSubview:self];
-    
-    [self fill];
-    self.shownImageView.frame = item.frame;
-    self.editArea.frame = item.frame;
-    self.editWindow.center = item.center;
-    self.editImageView.frame = item.bounds;
-    
     self.targetItem = item;
+    self.editImageView.image = [self.targetItem getImageViewToEdit].image;
     
-    self.editImageView = [self resetBoundsforEditImageView:self.editImageView withImage:self.targetItem.imageView.image];
-    self.shownImageView = [self resetFrameforShownImageView:self.shownImageView byEditImageView:self.editImageView];
-
+    [view addSubview:self];
+    [self addSubViewsToView];
+    [self addGestureRecognizerToView];
+    
+    
+    
 }
 
 - (void)hide {
-    [self.targetItem replaceImageViewWithImageView:self.editImageView];
+    [self.targetItem setImageByEditedImageView:self.editImageView];
     [self removeFromSuperview];
 }
 
-#pragma mark - UIScrollViewDelegate
+#pragma mark - event response
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    self.shownImageView = [self resetFrameforShownImageView:self.shownImageView byEditImageView:self.editImageView];
+- (void)panView:(UIPanGestureRecognizer *)sender {
+    
+        CGPoint point = [sender translationInView:sender.view];
+        
+        CGPoint temp = self.touchResponseView.center;
+        temp.x += point.x;
+        temp.y += point.y;
+        
+        if (self.touchResponseView.frame.origin.x == self.targetItem.frame.origin.x) {
+//            self.touchResponseView.frame = CGRectMake(self.targetItem.frame.origin.x,
+//                                                      self.touchResponseView.frame.origin.y,
+//                                                      self.touchResponseView.frame.size.width,
+//                                                      self.touchResponseView.frame.size.height);
+            self.touchResponseView.center = temp;
+        }
+        else {
+            self.touchResponseView.center = temp;
+        }
+    
+        [sender setTranslation:CGPointZero inView:sender.view];
 }
 
-- (void)scrollViewDidZoom:(UIScrollView *)scrollView {
-    self.shownImageView = [self resetFrameforShownImageView:self.shownImageView byEditImageView:self.editImageView];
+- (void)pinchView:(UIPinchGestureRecognizer *)sender {
+    self.touchResponseView.transform = CGAffineTransformScale(self.touchResponseView.transform, sender.scale, sender.scale);
+    sender.scale = 1.0;
 }
 
-- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
-    return self.editImageView;
+#pragma mark - Delegate
+- (UIImage *)scaleImage:(UIImage *)image toScale:(float)scaleSize {
+    UIGraphicsBeginImageContext(CGSizeMake(image.size.width * scaleSize, image.size.height * scaleSize));
+    [image drawInRect:CGRectMake(0, 0, image.size.width * scaleSize, image.size.height * scaleSize)];
+    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+                                
+    return scaledImage;
 }
 
 #pragma mark - private
 
-- (UIImageView *)resetBoundsforEditImageView:(UIImageView *)imageView withImage:(UIImage *)image {
-    [imageView setImage:image];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
-    
-    CGFloat imageViewWidth = imageView.bounds.size.width;
-    CGFloat imageViewHeight = imageView.bounds.size.height;
-    CGFloat imageWidth = imageView.image.size.width;
-    CGFloat imageHeight = imageView.image.size.height;
-    
-    CGFloat imageViewWHRatio = imageViewWidth / imageViewHeight;
-    CGFloat imageWHRatio = imageWidth / imageHeight;
-    
-    CGFloat deltaWidth = 0;
-    CGFloat deltaHeight = 0;
-    
-    if (imageViewWHRatio < imageWHRatio) {
-        deltaWidth = (imageView.bounds.size.height * imageWHRatio - imageView.bounds.size.width) / 2;
-        imageView.bounds = CGRectMake(0,
-                                      0,
-                                      imageView.bounds.size.height * imageWHRatio,
-                                      imageView.bounds.size.height);
-    }
-    else if (imageViewWHRatio > imageWHRatio) {
-        deltaHeight = (imageView.bounds.size.width / imageWHRatio - imageView.bounds.size.height) / 2;
-        imageView.bounds = CGRectMake(0,
-                                      0,
-                                      imageView.bounds.size.width,
-                                      imageView.bounds.size.width / imageWHRatio);
-    }
-    else {
-        
-    }
-    
-    self.editArea.contentSize = imageView.frame.size;
-    
-    if (imageViewWHRatio < imageWHRatio) {
-        self.editArea.contentInset = UIEdgeInsetsMake(0, deltaWidth, 0, -deltaWidth);
-    }
-    else if (imageViewWHRatio > imageWHRatio) {
-        self.editArea.contentInset = UIEdgeInsetsMake(deltaHeight, 0, -deltaHeight, 0);
-    }
-    else {
-        
-    }
-    
-    return imageView;
+- (void)addSubViewsToView {
+    [self fill];
+    [self.backgroundShade fill];
+    [self addLayersToBackgroundShade];
+    self.editWindow.frame = self.targetItem.frame;
+    self.editImageView.frame = self.targetItem.frame;
+    self.touchResponseView.frame = CGRectMake(self.targetItem.frame.origin.x - EDIT_PADDING,
+                                              self.targetItem.frame.origin.y - EDIT_PADDING,
+                                              self.targetItem.frame.size.width + 2.f*EDIT_PADDING,
+                                              self.targetItem.frame.size.height + 2.f*EDIT_PADDING);
 }
 
-- (UIImageView *)resetFrameforShownImageView:(UIImageView *)shownImage byEditImageView:(UIImageView *)editImage {
-    shownImage.frame = CGRectMake(
-                                  editImage.frame.origin.x + self.editArea.frame.origin.x,
-                                  editImage.frame.origin.y + self.editArea.frame.origin.y,
-                                  editImage.frame.size.width,
-                                  editImage.frame.size.height
-                                  );
-    return shownImage;
+- (void)addLayersToBackgroundShade {
+    CALayer *topLayer = [CALayer layer];
+    CALayer *bottomLayer = [CALayer layer];
+    CALayer *leftLayer = [CALayer layer];
+    CALayer *rightLayer = [CALayer layer];
+    
+    topLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    bottomLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    leftLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    rightLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    
+    topLayer.frame = CGRectMake(self.backgroundShade.origin.x,
+                                self.backgroundShade.origin.y,
+                                self.backgroundShade.size.width,
+                                self.targetItem.frame.origin.y);
+    
+    bottomLayer.frame = CGRectMake(self.backgroundShade.origin.x,
+                                   self.targetItem.frame.origin.y + self.targetItem.frame.size.height,
+                                   self.backgroundShade.size.width,
+                                   self.backgroundShade.size.height -
+                                   (self.targetItem.frame.origin.y + self.targetItem.frame.size.height));
+    
+    leftLayer.frame = CGRectMake(self.backgroundShade.origin.x,
+                                 self.targetItem.origin.y,
+                                 self.targetItem.origin.x,
+                                 self.targetItem.frame.size.height);
+    
+    rightLayer.frame = CGRectMake(self.targetItem.origin.x + self.targetItem.size.width,
+                                  self.targetItem.origin.y,
+                                  self.backgroundShade.size.width -
+                                  (self.targetItem.origin.x + self.targetItem.size.width),
+                                  self.targetItem.frame.size.height);
+    
+    [self.backgroundShade.layer addSublayer:topLayer];
+    [self.backgroundShade.layer addSublayer:bottomLayer];
+    [self.backgroundShade.layer addSublayer:leftLayer];
+    [self.backgroundShade.layer addSublayer:rightLayer];
+}
+
+- (void)addGestureRecognizerToView {
+    UIPanGestureRecognizer  *pan = [[UIPanGestureRecognizer alloc] init];
+    [self.touchResponseView addGestureRecognizer:pan];
+    [pan addTarget:self action:@selector(panView:)];
+    
+    UIPinchGestureRecognizer *pinch = [[UIPinchGestureRecognizer alloc] init];
+    pinch.delegate = self;
+    [self.touchResponseView addGestureRecognizer:pinch];
+    [pinch addTarget:self action:@selector(pinchView:)];
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
@@ -157,26 +184,13 @@
 
 #pragma mark - getters and setters
 
-- (UIScrollView *)editArea {
-    if (_editArea == nil) {
-        _editArea = [[UIScrollView alloc] init];
-        _editArea.scrollEnabled = YES;
-        _editArea.layer.borderWidth = 2.f;
-        _editArea.layer.borderColor = [[UIColor cyanColor] CGColor];
-        _editArea.bounces = NO;
-        _editArea.clipsToBounds = NO;
-        _editArea.maximumZoomScale = 3.f;
-        _editArea.minimumZoomScale = 1.f;
-        _editArea.delegate = self;
-    }
-    return _editArea;
-}
-
 - (UIImageView *)editWindow {
     if (_editWindow == nil) {
         _editWindow = [[UIImageView alloc] init];
+        _editWindow.layer.borderWidth = 2.f;
+        _editWindow.layer.borderColor = [[UIColor cyanColor] CGColor];
         _editWindow.image = [UIImage imageNamed:@"icon_direction-sign_80"];
-        _editWindow.bounds = CGRectMake(0, 0, _editWindow.image.size.width, _editWindow.image.size.height);
+        _editWindow.contentMode = UIViewContentModeCenter;
     }
     return _editWindow;
 }
@@ -184,25 +198,28 @@
 - (UIImageView *)editImageView {
     if (_editImageView == nil) {
         _editImageView = [[UIImageView alloc] init];
-        
+        _editImageView.clipsToBounds = NO;
+        _editImageView.contentMode = UIViewContentModeScaleAspectFill;
+//        _editImageView.layer.contentsRect = CGRectMake(0, 0, 0.5, 0.5);
     }
     return _editImageView;
-}
-
-- (UIImageView *)shownImageView {
-    if (_shownImageView == nil) {
-        _shownImageView = [[UIImageView alloc] init];
-        _shownImageView.alpha = 0.5f;
-    }
-    return _shownImageView;
 }
 
 - (UIView *)backgroundShade {
     if (_backgroundShade == nil) {
         _backgroundShade = [[UIView alloc] init];
-        _backgroundShade.alpha = 0.5;
+        _backgroundShade.alpha = 0.5f;
     }
     return _backgroundShade;
+}
+
+- (UIView *)touchResponseView {
+    if (_touchResponseView == nil) {
+        _touchResponseView = [[UIView alloc] init];
+        _touchResponseView.backgroundColor = [UIColor purpleColor];
+        _touchResponseView.alpha = 0.3f;
+    }
+    return _touchResponseView;
 }
 
 
