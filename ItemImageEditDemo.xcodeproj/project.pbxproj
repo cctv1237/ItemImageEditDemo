@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB2C6BEE1B56068A009B6493 /* UIView+LayoutMethods.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C6BED1B56068A009B6493 /* UIView+LayoutMethods.m */; };
+		AB2C6BF71B560BB2009B6493 /* ImageEditPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C6BF61B560BB2009B6493 /* ImageEditPanel.m */; };
+		AB2C6BFA1B564DE3009B6493 /* DemoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = AB2C6BF91B564DE3009B6493 /* DemoItem.m */; };
 		AB8F42FF1B54F4790076ECF5 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = AB8F42FE1B54F4790076ECF5 /* main.m */; };
 		AB8F43021B54F4790076ECF5 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = AB8F43011B54F4790076ECF5 /* AppDelegate.m */; };
 		AB8F43051B54F4790076ECF5 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = AB8F43041B54F4790076ECF5 /* ViewController.m */; };
@@ -27,6 +30,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		AB2C6BEC1B56068A009B6493 /* UIView+LayoutMethods.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+LayoutMethods.h"; sourceTree = "<group>"; };
+		AB2C6BED1B56068A009B6493 /* UIView+LayoutMethods.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+LayoutMethods.m"; sourceTree = "<group>"; };
+		AB2C6BF51B560BB2009B6493 /* ImageEditPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageEditPanel.h; sourceTree = "<group>"; };
+		AB2C6BF61B560BB2009B6493 /* ImageEditPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageEditPanel.m; sourceTree = "<group>"; };
+		AB2C6BF81B564DE3009B6493 /* DemoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoItem.h; sourceTree = "<group>"; };
+		AB2C6BF91B564DE3009B6493 /* DemoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoItem.m; sourceTree = "<group>"; };
 		AB8F42F91B54F4790076ECF5 /* ItemImageEditDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ItemImageEditDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB8F42FD1B54F4790076ECF5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AB8F42FE1B54F4790076ECF5 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -60,6 +69,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AB2C6BEB1B56068A009B6493 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				AB2C6BEC1B56068A009B6493 /* UIView+LayoutMethods.h */,
+				AB2C6BED1B56068A009B6493 /* UIView+LayoutMethods.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+		AB2C6BF41B560BA1009B6493 /* ImageEditPanel */ = {
+			isa = PBXGroup;
+			children = (
+				AB2C6BF51B560BB2009B6493 /* ImageEditPanel.h */,
+				AB2C6BF61B560BB2009B6493 /* ImageEditPanel.m */,
+			);
+			path = ImageEditPanel;
+			sourceTree = "<group>";
+		};
 		AB8F42F01B54F4790076ECF5 = {
 			isa = PBXGroup;
 			children = (
@@ -81,8 +108,12 @@
 		AB8F42FB1B54F4790076ECF5 /* ItemImageEditDemo */ = {
 			isa = PBXGroup;
 			children = (
+				AB2C6BEB1B56068A009B6493 /* Categories */,
+				AB2C6BF41B560BA1009B6493 /* ImageEditPanel */,
 				AB8F43001B54F4790076ECF5 /* AppDelegate.h */,
 				AB8F43011B54F4790076ECF5 /* AppDelegate.m */,
+				AB2C6BF81B564DE3009B6493 /* DemoItem.h */,
+				AB2C6BF91B564DE3009B6493 /* DemoItem.m */,
 				AB8F43031B54F4790076ECF5 /* ViewController.h */,
 				AB8F43041B54F4790076ECF5 /* ViewController.m */,
 				AB8F43061B54F4790076ECF5 /* Main.storyboard */,
@@ -222,6 +253,9 @@
 				AB8F43051B54F4790076ECF5 /* ViewController.m in Sources */,
 				AB8F43021B54F4790076ECF5 /* AppDelegate.m in Sources */,
 				AB8F42FF1B54F4790076ECF5 /* main.m in Sources */,
+				AB2C6BEE1B56068A009B6493 /* UIView+LayoutMethods.m in Sources */,
+				AB2C6BF71B560BB2009B6493 /* ImageEditPanel.m in Sources */,
+				AB2C6BFA1B564DE3009B6493 /* DemoItem.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -416,6 +450,7 @@
 				AB8F431E1B54F4790076ECF5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		AB8F431F1B54F4790076ECF5 /* Build configuration list for PBXNativeTarget "ItemImageEditDemoTests" */ = {
 			isa = XCConfigurationList;
@@ -424,6 +459,7 @@
 				AB8F43211B54F4790076ECF5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
