@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface EditWindow : UIImageView
+@interface EditWindow : UIView
 
 @end

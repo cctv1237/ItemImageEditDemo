@@ -10,6 +10,16 @@
 
 @implementation BackgroundShade
 
+#pragma mark - life cycle
+
+- (instancetype)init {
+    if (self = [super init]) {
+        self.alpha = 0.5;
+    }
+    return self;
+
+}
+
 #pragma mark - public methods
 
 - (void)addLayersToBackgroundShadeWithTargetItem:(UIView *)targetItem {

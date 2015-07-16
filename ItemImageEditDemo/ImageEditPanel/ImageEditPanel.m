@@ -52,13 +52,8 @@
     self.targetItem = item;
     
     [view addSubview:self];
-    
     [self fill];
-    [self.backgroundShade fill];
-    [self.backgroundShade addLayersToBackgroundShadeWithTargetItem:self.targetItem];
-    self.editArea.frame = item.frame;
-    self.editWindow.center = item.center;
-    self.editImageView.frame = item.imageView.frame;
+    [self setFramesOfWidgets];
     
     self.editImageView = [self resetBoundsforEditImageView:self.editImageView withImage:self.targetItem.imageView.image];
     
@@ -77,7 +72,15 @@
     return self.editImageView;
 }
 
-#pragma mark - private
+#pragma mark - private methods
+
+- (void)setFramesOfWidgets {
+    [self.backgroundShade fill];
+    [self.backgroundShade addLayersToBackgroundShadeWithTargetItem:self.targetItem];
+    self.editArea.frame = self.targetItem.frame;
+    self.editWindow.center = self.targetItem.center;
+    self.editImageView.frame = self.targetItem.imageView.frame;
+}
 
 - (UIImageView *)resetBoundsforEditImageView:(UIImageView *)imageView withImage:(UIImage *)image {
     [imageView setImage:image];
@@ -156,7 +159,7 @@
     return _editArea;
 }
 
-- (UIImageView *)editWindow {
+- (EditWindow *)editWindow {
     if (_editWindow == nil) {
         _editWindow = [[EditWindow alloc] init];
         
@@ -175,7 +178,7 @@
 - (UIView *)backgroundShade {
     if (_backgroundShade == nil) {
         _backgroundShade = [[BackgroundShade alloc] init];
-        _backgroundShade.alpha = 0.5;
+        
     }
     return _backgroundShade;
 }
