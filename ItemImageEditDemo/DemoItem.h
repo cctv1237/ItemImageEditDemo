@@ -10,8 +10,8 @@
 
 @interface DemoItem : UIView
 
-- (UIImageView *)getImageViewToEdit;
-- (void)setImageByEditedImageView:(UIImageView *)imageView;
+@property (nonatomic, strong) UIImageView *imageView;
 
+- (void)replaceImageViewWithImageView:(UIImageView *)imageView;
 
 @end

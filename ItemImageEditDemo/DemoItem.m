@@ -8,12 +8,6 @@
 
 #import "DemoItem.h"
 
-@interface DemoItem ()
-
-@property (nonatomic, strong) UIImageView *imageView;
-
-@end
-
 @implementation DemoItem
 /*
 // Only override drawRect: if you perform custom drawing.
@@ -34,13 +28,8 @@
 
 }
 
-- (UIImageView *)getImageViewToEdit {
-    return self.imageView;
-}
-
-- (void)setImageByEditedImageView:(UIImageView *)imageView {
-    self.imageView.image = nil;
-    self.imageView.image = imageView.image;
+- (void)replaceImageViewWithImageView:(UIImageView *)imageView {
+    self.imageView = imageView;
 }
 
 - (UIImageView *)imageView {
