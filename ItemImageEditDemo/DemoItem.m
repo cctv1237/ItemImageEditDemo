@@ -31,9 +31,13 @@
 
 }
 
-- (void)replaceImageViewWithImageView:(UIImageView *)imageView {
+- (void)replaceImageViewWithImageView:(UIImageView *)imageView contentOffset:(CGPoint)contentOffset{
     [self.imageView removeFromSuperview];
     self.imageView = imageView;
+    [self.imageView setFrame:CGRectMake(-contentOffset.x,
+                                        -contentOffset.y,
+                                        self.imageView.frame.size.width,
+                                        self.imageView.frame.size.height)];
     [self addSubview:self.imageView];
 }
 
@@ -42,7 +46,6 @@
         _imageView = [[UIImageView alloc] init];
         _imageView.userInteractionEnabled = YES;
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
-        _imageView.clipsToBounds = YES;
     }
     return _imageView;
 }

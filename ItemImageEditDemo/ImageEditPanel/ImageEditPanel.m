@@ -12,6 +12,8 @@
 #import "EditWindow.h"
 #import "UIView+LayoutMethods.h"
 
+#define MAX_EDIT_IMAGE_SCALE 3
+
 @interface ImageEditPanel () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIScrollView *editArea;
@@ -19,6 +21,9 @@
 @property (nonatomic, strong) UIImageView *editImageView;
 @property (nonatomic, strong) DemoItem *targetItem;
 @property (nonatomic, strong) BackgroundShade *backgroundShade;
+
+@property (nonatomic, assign) CGFloat imageViewWHRatio;
+@property (nonatomic, assign) CGFloat imageWHRatio;
 
 @end
 
@@ -54,22 +59,37 @@
     [view addSubview:self];
     [self fill];
     [self setFramesOfWidgets];
-    
-    self.editImageView = [self resetBoundsforEditImageView:self.editImageView withImage:self.targetItem.imageView.image];
+    [self buildEditImageView];
+    self.editImageView = [self resetEditImageView:self.editImageView];
+    [self setZoomScaleForEditArea];
     
     
 
 }
 
 - (void)hide {
-    [self.targetItem replaceImageViewWithImageView:self.editImageView];
+    [self.targetItem replaceImageViewWithImageView:self.editImageView contentOffset:self.editArea.contentOffset];
     [self removeFromSuperview];
 }
 
 #pragma mark - UIScrollViewDelegate
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+//    NSLog(@"%f,%f",self.editArea.contentOffset.x,self.editArea.contentOffset.y);
+//    NSLog(@"%f,%f",self.editArea.contentSize.width,self.editArea.contentSize.height);
+    NSLog(@"%f,%f",self.editImageView.frame.size.width,self.editImageView.frame.size.height);
+}
+
+- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view {
+    
+}
+
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
     return self.editImageView;
+}
+
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
+    self.editImageView = [self resetEditImageView:self.editImageView];
 }
 
 #pragma mark - private methods
@@ -78,44 +98,54 @@
     [self.backgroundShade fill];
     [self.backgroundShade addLayersToBackgroundShadeWithTargetItem:self.targetItem];
     self.editArea.frame = self.targetItem.frame;
-    self.editWindow.center = self.targetItem.center;
+    [self.editWindow didDrawWindowBlockWithTargetItem:self.targetItem];
     self.editImageView.frame = self.targetItem.imageView.frame;
 }
 
-- (UIImageView *)resetBoundsforEditImageView:(UIImageView *)imageView withImage:(UIImage *)image {
-    [imageView setImage:image];
-    imageView.contentMode = UIViewContentModeScaleAspectFill;
+- (void)setZoomScaleForEditArea {
+    self.editArea.maximumZoomScale = MAX_EDIT_IMAGE_SCALE * self.targetItem.frame.size.width / self.editImageView.frame.size.width;
+    self.editArea.minimumZoomScale = self.targetItem.frame.size.width / self.editImageView.frame.size.width;
+}
+
+- (UIImageView *)resetEditImageView:(UIImageView *)imageView {
     
-    CGFloat imageViewWidth = imageView.bounds.size.width;
-    CGFloat imageViewHeight = imageView.bounds.size.height;
+    CGFloat imageViewWidth = imageView.frame.size.width;
+    CGFloat imageViewHeight = imageView.frame.size.height;
     CGFloat imageWidth = imageView.image.size.width;
     CGFloat imageHeight = imageView.image.size.height;
     
     CGFloat imageViewWHRatio = imageViewWidth / imageViewHeight;
     CGFloat imageWHRatio = imageWidth / imageHeight;
     
+    self.imageViewWHRatio = imageViewWHRatio;
+    self.imageWHRatio = imageWHRatio;
+    
     CGFloat deltaWidth = 0;
     CGFloat deltaHeight = 0;
     
+    CGSize contentSize;
+    
     if (imageViewWHRatio < imageWHRatio) {
-        deltaWidth = (imageView.bounds.size.height * imageWHRatio - imageView.bounds.size.width) / 2;
-        imageView.bounds = CGRectMake(0,
-                                      0,
-                                      imageView.bounds.size.height * imageWHRatio,
-                                      imageView.bounds.size.height);
+        deltaWidth = (imageViewHeight * imageWHRatio - imageViewWidth) / 2;
+//        imageView.bounds = CGRectMake(0,
+//                                      0,
+//                                      imageView.bounds.size.height * imageWHRatio,
+//                                      imageView.bounds.size.height);
+        contentSize = CGSizeMake(imageViewHeight * imageWHRatio, imageViewHeight);
     }
     else if (imageViewWHRatio > imageWHRatio) {
-        deltaHeight = (imageView.bounds.size.width / imageWHRatio - imageView.bounds.size.height) / 2;
-        imageView.bounds = CGRectMake(0,
-                                      0,
-                                      imageView.bounds.size.width,
-                                      imageView.bounds.size.width / imageWHRatio);
+        deltaHeight = (imageViewWidth / imageWHRatio - imageViewHeight) / 2;
+//        imageView.bounds = CGRectMake(0,
+//                                      0,
+//                                      imageView.bounds.size.width,
+//                                      imageView.bounds.size.width / imageWHRatio);
+        contentSize = CGSizeMake(imageViewWidth, imageViewWidth / imageWHRatio);
     }
     else {
         
     }
     
-    self.editArea.contentSize = imageView.frame.size;
+    self.editArea.contentSize = contentSize;
     
     if (imageViewWHRatio < imageWHRatio) {
         self.editArea.contentInset = UIEdgeInsetsMake(0, deltaWidth, 0, -deltaWidth);
@@ -128,6 +158,13 @@
     }
     
     return imageView;
+}
+
+- (void)buildEditImageView {
+    [self.editArea setContentOffset:CGPointMake(-self.editImageView.frame.origin.x, -self.editImageView.frame.origin.y)];
+    [self.editImageView setFrame:self.editImageView.bounds];
+    [self.editImageView setImage:self.targetItem.imageView.image];
+    self.editImageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
@@ -147,13 +184,8 @@
 - (UIScrollView *)editArea {
     if (_editArea == nil) {
         _editArea = [[UIScrollView alloc] init];
-        _editArea.scrollEnabled = YES;
-        _editArea.layer.borderWidth = 2.f;
-        _editArea.layer.borderColor = [[UIColor cyanColor] CGColor];
         _editArea.bounces = NO;
         _editArea.clipsToBounds = NO;
-        _editArea.maximumZoomScale = 3.f;
-        _editArea.minimumZoomScale = 1.f;
         _editArea.delegate = self;
     }
     return _editArea;

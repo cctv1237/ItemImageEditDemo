@@ -28,20 +28,15 @@
     CALayer *leftLayer = [CALayer layer];
     CALayer *rightLayer = [CALayer layer];
     
-    topLayer.backgroundColor = [UIColor whiteColor].CGColor;
-    bottomLayer.backgroundColor = [UIColor whiteColor].CGColor;
-    leftLayer.backgroundColor = [UIColor whiteColor].CGColor;
-    rightLayer.backgroundColor = [UIColor whiteColor].CGColor;
-    
     topLayer.frame = CGRectMake(self.frame.origin.x,
-                                self.frame.origin.y,
+                                self.frame.origin.y - self.frame.size.height,
                                 self.frame.size.width,
-                                targetItem.frame.origin.y);
+                                targetItem.frame.origin.y + self.frame.size.height);
     
     bottomLayer.frame = CGRectMake(self.frame.origin.x,
                                    targetItem.frame.origin.y + targetItem.frame.size.height,
                                    self.frame.size.width,
-                                   self.frame.size.height -
+                                   self.frame.size.height*3 -
                                    (targetItem.frame.origin.y + targetItem.frame.size.height));
     
     leftLayer.frame = CGRectMake(self.frame.origin.x,
@@ -59,6 +54,12 @@
     [self.layer addSublayer:bottomLayer];
     [self.layer addSublayer:leftLayer];
     [self.layer addSublayer:rightLayer];
+    
+    topLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    bottomLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    leftLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    rightLayer.backgroundColor = [UIColor whiteColor].CGColor;
+    
 }
 
 #pragma mark - private methods

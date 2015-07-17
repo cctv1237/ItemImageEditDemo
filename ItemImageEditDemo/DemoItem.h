@@ -12,6 +12,6 @@
 
 @property (nonatomic, strong) UIImageView *imageView;
 
-- (void)replaceImageViewWithImageView:(UIImageView *)imageView;
+- (void)replaceImageViewWithImageView:(UIImageView *)imageView contentOffset:(CGPoint)contentOffset;
 
 @end

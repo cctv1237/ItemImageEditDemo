@@ -10,4 +10,6 @@
 
 @interface EditWindow : UIView
 
+- (void)didDrawWindowBlockWithTargetItem:(UIView *)targetItem;
+
 @end
