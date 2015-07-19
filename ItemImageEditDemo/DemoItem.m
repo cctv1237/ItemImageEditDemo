@@ -31,8 +31,8 @@
 
 }
 
-- (void)replaceImageViewWithImageView:(UIImageView *)imageView contentOffset:(CGPoint)contentOffset{
-    [self.imageView removeFromSuperview];
+- (void)replaceImageViewWithImageView:(UIImageView *)imageView contentOffset:(CGPoint)contentOffset {
+    
     self.imageView = imageView;
     [self.imageView setFrame:CGRectMake(-contentOffset.x,
                                         -contentOffset.y,

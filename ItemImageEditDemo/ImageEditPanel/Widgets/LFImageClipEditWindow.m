@@ -3,19 +3,19 @@
 //  ItemImageEditDemo
 //
 //  Created by LF on 15/7/16.
-//  Copyright (c) 2015年 Beauty Sight Network Technology Co.,Ltd. All rights reserved.
+//  Copyright (c) 2015年 Fan. All rights reserved.
 //
 
-#import "EditWindow.h"
+#import "LFImageClipEditWindow.h"
 
-@interface EditWindow ()
+@interface LFImageClipEditWindow ()
 
 @property (nonatomic, strong) UIImageView *editSign;
 @property (nonatomic, strong) UIView *targetItem;
 
 @end
 
-@implementation EditWindow
+@implementation LFImageClipEditWindow
 
 #pragma mark - life cycle
 
@@ -33,6 +33,7 @@
 #pragma mark - public methods
 
 - (void)didDrawWindowBlockWithTargetItem:(UIView *)targetItem {
+    
     self.targetItem = targetItem;
     self.frame = targetItem.frame;
     [self addSubview:self.editSign];
@@ -43,7 +44,7 @@
 #pragma mark - private methods
 
 - (void)drawRect:(CGRect)rect {
-    // Drawing code
+    
     CGFloat stepWidth = self.bounds.size.width / 3;
     CGFloat stepHeight = self.bounds.size.height / 3;
     
@@ -88,6 +89,7 @@
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    
     UIView *hitView = [super hitTest:point withEvent:event];
     if (hitView == self)
     {

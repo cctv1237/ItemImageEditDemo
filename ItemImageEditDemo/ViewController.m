@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "DemoItem.h"
-#import "ImageEditPanel.h"
+#import "LFImageClipEditPanel.h"
 
 @interface ViewController ()
 
@@ -17,7 +17,7 @@
 @property (nonatomic, strong) UIButton *edit;
 @property (nonatomic, strong) UIButton *endEdit;
 
-@property (nonatomic, strong) ImageEditPanel *imageEditPanel;
+@property (nonatomic, strong) LFImageClipEditPanel *imageEditPanel;
 
 @end
 
@@ -90,9 +90,9 @@
     return _endEdit;
 }
 
-- (ImageEditPanel *)imageEditPanel {
+- (LFImageClipEditPanel *)imageEditPanel {
     if (_imageEditPanel == nil) {
-        _imageEditPanel = [[ImageEditPanel alloc] init];
+        _imageEditPanel = [[LFImageClipEditPanel alloc] init];
         
     }
     return _imageEditPanel;

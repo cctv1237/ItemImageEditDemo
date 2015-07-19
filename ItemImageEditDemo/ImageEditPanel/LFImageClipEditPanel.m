@@ -3,31 +3,32 @@
 //  ItemImageEditDemo
 //
 //  Created by LF on 15/7/15.
-//  Copyright (c) 2015年 Beauty Sight Network Technology Co.,Ltd. All rights reserved.
+//  Copyright (c) 2015年 Fan. All rights reserved.
 //
 
-#import "ImageEditPanel.h"
+#import "LFImageClipEditPanel.h"
 #import "DemoItem.h"
-#import "BackgroundShade.h"
-#import "EditWindow.h"
+#import "LFImageClipBackgroundShade.h"
+#import "LFImageClipEditWindow.h"
 #import "UIView+LayoutMethods.h"
 
 #define MAX_EDIT_IMAGE_SCALE 3
 
-@interface ImageEditPanel () <UIScrollViewDelegate>
+@interface LFImageClipEditPanel () <UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIScrollView *editArea;
-@property (nonatomic, strong) EditWindow *editWindow;
 @property (nonatomic, strong) UIImageView *editImageView;
+@property (nonatomic, strong) LFImageClipEditWindow *editWindow;
+@property (nonatomic, strong) LFImageClipBackgroundShade *backgroundShade;
 @property (nonatomic, strong) DemoItem *targetItem;
-@property (nonatomic, strong) BackgroundShade *backgroundShade;
 
 @property (nonatomic, assign) CGFloat imageViewWHRatio;
 @property (nonatomic, assign) CGFloat imageWHRatio;
+@property (nonatomic, assign) CGPoint contentOffSetPoint;
 
 @end
 
-@implementation ImageEditPanel
+@implementation LFImageClipEditPanel
 
 #pragma mark - life cycle
 
@@ -42,32 +43,24 @@
 
 }
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
-}
-*/
-
 #pragma mark - public methods
 
 - (void)showAtItem:(DemoItem *)item inView:(UIView *)view {
     
     self.targetItem = item;
-    
     [view addSubview:self];
     [self fill];
     [self setFramesOfWidgets];
-    [self buildEditImageView];
-    self.editImageView = [self resetEditImageView:self.editImageView];
+    [self setContentOffSetPoint];
+    [self setFrameOfEditImageView];
+    [self resetEditAreaContentSizeByImageView:self.editImageView withContentOffSetPoint:self.contentOffSetPoint];
     [self setZoomScaleForEditArea];
+    [self.targetItem.imageView removeFromSuperview];
     
-    
-
 }
 
 - (void)hide {
+    
     [self.targetItem replaceImageViewWithImageView:self.editImageView contentOffset:self.editArea.contentOffset];
     [self removeFromSuperview];
 }
@@ -77,11 +70,7 @@
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
 //    NSLog(@"%f,%f",self.editArea.contentOffset.x,self.editArea.contentOffset.y);
 //    NSLog(@"%f,%f",self.editArea.contentSize.width,self.editArea.contentSize.height);
-    NSLog(@"%f,%f",self.editImageView.frame.size.width,self.editImageView.frame.size.height);
-}
-
-- (void)scrollViewWillBeginZooming:(UIScrollView *)scrollView withView:(UIView *)view {
-    
+//    NSLog(@"%f,%f",self.editImageView.frame.size.width,self.editImageView.frame.size.height);
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
@@ -89,12 +78,13 @@
 }
 
 - (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(CGFloat)scale {
-    self.editImageView = [self resetEditImageView:self.editImageView];
+    [self resetEditAreaContentSizeByImageView:self.editImageView];
 }
 
 #pragma mark - private methods
 
 - (void)setFramesOfWidgets {
+    
     [self.backgroundShade fill];
     [self.backgroundShade addLayersToBackgroundShadeWithTargetItem:self.targetItem];
     self.editArea.frame = self.targetItem.frame;
@@ -103,11 +93,18 @@
 }
 
 - (void)setZoomScaleForEditArea {
+    
     self.editArea.maximumZoomScale = MAX_EDIT_IMAGE_SCALE * self.targetItem.frame.size.width / self.editImageView.frame.size.width;
     self.editArea.minimumZoomScale = self.targetItem.frame.size.width / self.editImageView.frame.size.width;
 }
 
-- (UIImageView *)resetEditImageView:(UIImageView *)imageView {
+- (void)resetEditAreaContentSizeByImageView:(UIImageView *)imageView withContentOffSetPoint:(CGPoint)contentOffSetPoint{
+    
+    [self resetEditAreaContentSizeByImageView:imageView];
+    [self.editArea setContentOffset:CGPointMake(self.contentOffSetPoint.x, self.contentOffSetPoint.y)];
+}
+
+- (void)resetEditAreaContentSizeByImageView:(UIImageView *)imageView {
     
     CGFloat imageViewWidth = imageView.frame.size.width;
     CGFloat imageViewHeight = imageView.frame.size.height;
@@ -117,64 +114,41 @@
     CGFloat imageViewWHRatio = imageViewWidth / imageViewHeight;
     CGFloat imageWHRatio = imageWidth / imageHeight;
     
-    self.imageViewWHRatio = imageViewWHRatio;
-    self.imageWHRatio = imageWHRatio;
-    
-    CGFloat deltaWidth = 0;
-    CGFloat deltaHeight = 0;
-    
-    CGSize contentSize;
-    
     if (imageViewWHRatio < imageWHRatio) {
-        deltaWidth = (imageViewHeight * imageWHRatio - imageViewWidth) / 2;
-//        imageView.bounds = CGRectMake(0,
-//                                      0,
-//                                      imageView.bounds.size.height * imageWHRatio,
-//                                      imageView.bounds.size.height);
-        contentSize = CGSizeMake(imageViewHeight * imageWHRatio, imageViewHeight);
-    }
-    else if (imageViewWHRatio > imageWHRatio) {
-        deltaHeight = (imageViewWidth / imageWHRatio - imageViewHeight) / 2;
-//        imageView.bounds = CGRectMake(0,
-//                                      0,
-//                                      imageView.bounds.size.width,
-//                                      imageView.bounds.size.width / imageWHRatio);
-        contentSize = CGSizeMake(imageViewWidth, imageViewWidth / imageWHRatio);
-    }
-    else {
-        
-    }
-    
-    self.editArea.contentSize = contentSize;
-    
-    if (imageViewWHRatio < imageWHRatio) {
+        CGFloat deltaWidth = (imageViewHeight * imageWHRatio - imageViewWidth) / 2;
+        self.editArea.contentSize = CGSizeMake(imageViewHeight * imageWHRatio, imageViewHeight);
         self.editArea.contentInset = UIEdgeInsetsMake(0, deltaWidth, 0, -deltaWidth);
     }
     else if (imageViewWHRatio > imageWHRatio) {
+        CGFloat deltaHeight = (imageViewWidth / imageWHRatio - imageViewHeight) / 2;
+        self.editArea.contentSize = CGSizeMake(imageViewWidth, imageViewWidth / imageWHRatio);
         self.editArea.contentInset = UIEdgeInsetsMake(deltaHeight, 0, -deltaHeight, 0);
     }
     else {
         
     }
     
-    return imageView;
 }
 
-- (void)buildEditImageView {
-    [self.editArea setContentOffset:CGPointMake(-self.editImageView.frame.origin.x, -self.editImageView.frame.origin.y)];
+- (void)setContentOffSetPoint {
+    
+    self.contentOffSetPoint = CGPointMake(-self.editImageView.frame.origin.x, -self.editImageView.frame.origin.y);
+}
+
+- (void)setFrameOfEditImageView {
+    
     [self.editImageView setFrame:self.editImageView.bounds];
     [self.editImageView setImage:self.targetItem.imageView.image];
     self.editImageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event {
+    
     UIView *hitView = [super hitTest:point withEvent:event];
-    if (hitView == self)
-    {
+    if (hitView == self) {
         return nil;
     }
-    else
-    {
+    else {
         return hitView;
     }
 }
@@ -191,9 +165,9 @@
     return _editArea;
 }
 
-- (EditWindow *)editWindow {
+- (LFImageClipEditWindow *)editWindow {
     if (_editWindow == nil) {
-        _editWindow = [[EditWindow alloc] init];
+        _editWindow = [[LFImageClipEditWindow alloc] init];
         
     }
     return _editWindow;
@@ -209,7 +183,7 @@
 
 - (UIView *)backgroundShade {
     if (_backgroundShade == nil) {
-        _backgroundShade = [[BackgroundShade alloc] init];
+        _backgroundShade = [[LFImageClipBackgroundShade alloc] init];
         
     }
     return _backgroundShade;
